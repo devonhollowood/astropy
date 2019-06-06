@@ -2805,6 +2805,29 @@ class TestVLATables(FitsTestCase):
             for idx in range(1, 3):
                 assert comparerecords(new_hdul[idx].data, t2.data)
 
+    def test_vla_strings(self):
+        """ Regession test for https://github.com/astropy/astropy/issues/7810 """
+        expected_data = fits.BinTableHDU.from_columns([
+            fits.Column(
+                'YEAR',
+                format='K',
+                array=np.array([2017, 2016, 2015])
+            ),
+            fits.Column(
+                'BEST_PICTURE',
+                format='1PA',
+                array=np.array(['The Shape of Water', 'Moonlight', 'Spotlight'])
+            ),
+            fits.Column(
+                'BOX_OFFICE_GROSS',
+                format='K',
+                array=np.array([195200000, 65300000, 98300000])
+            ),
+        ])
+        with fits.open(self.data('variable_length_strings.fits')) as handle:
+            data = handle[1].data
+        assert comparerecords(data, expected_data)
+
 
 # These are tests that solely test the Column and ColDefs interfaces and
 # related functionality without directly involving full tables; currently there
